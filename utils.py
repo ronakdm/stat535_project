@@ -167,7 +167,7 @@ def train(
         print("  Average training loss: {0:.2f}".format(avg_train_loss))
         print("  Training epoch took: {:}".format(training_time))
 
-        avg_val_loss, total_squared_error, validation_time = evaluate(
+        avg_val_loss, total_squared_error, validation_time, squared_error_ci = evaluate(
             model, validation_dataloader, criterion
         )
 
@@ -179,6 +179,7 @@ def train(
     training_stats = {
         "Training Loss": avg_train_loss,
         "Valid. Loss": avg_val_loss,
+        "Valid. CI": squared_error_ci,
         "Training Time": training_time,
         "Validation Time": validation_time,
     }
@@ -193,7 +194,7 @@ def train(
 
 
 def squared_error(outputs, y_batch):
-    return sum((outputs.numpy() - y_batch.numpy()) ** 2)
+    return list((outputs.numpy() - y_batch.numpy()) ** 2)
 
 
 def evaluate(model, validation_dataloader, criterion):
@@ -214,7 +215,7 @@ def evaluate(model, validation_dataloader, criterion):
 
     # Tracking variables
     total_eval_loss = 0
-    total_squared_error = 0
+    squared_errors = []
 
     # Evaluate data for one epoch
     for x_batch, y_batch in validation_dataloader:
@@ -229,7 +230,7 @@ def evaluate(model, validation_dataloader, criterion):
 
             # Accumulate the validation loss.
             total_eval_loss += loss.item()
-            total_squared_error += squared_error(outputs, y_batch)
+            squared_errors += squared_error(outputs, y_batch)
 
     # Calculate the average loss over all of the batches.
     avg_val_loss = total_eval_loss / len(validation_dataloader)
@@ -237,8 +238,13 @@ def evaluate(model, validation_dataloader, criterion):
     # Measure how long the validation run took.
     validation_time = format_time(time.time() - t0)
 
+    squared_errors = np.array(squared_errors)
+    total_squared_error = squared_errors.sum()
+    squared_error_ci = 1.96 * squared_errors.std() / np.sqrt(len(squared_errors))
+
     print("  Validation Loss: {0:.2f}".format(avg_val_loss))
+    print("  Validation CI: +/-{0:.2f}".format(squared_error_ci))
     print("  Validation SSE: {0:.2f}".format(total_squared_error))
     print("  Validation took: {:}".format(validation_time))
 
-    return avg_val_loss, total_squared_error, validation_time
+    return avg_val_loss, total_squared_error, validation_time, squared_error_ci
