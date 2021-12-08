@@ -13,7 +13,6 @@ class FeedForwardRegressionNet(nn.Module):
         embed_dim1,
         hidden_dims,
         output_dim,
-        dropout,
     ):
         super(FeedForwardRegressionNet, self).__init__()
 
@@ -29,9 +28,6 @@ class FeedForwardRegressionNet(nn.Module):
             [nn.Linear(dims[i - 1], dims[i]) for i in range(1, len(dims))]
         )
         self.output_layer = nn.Linear(hidden_dims[-1], output_dim)
-        self.dropout = nn.ModuleList(
-            [nn.Dropout(dropout) for i in range(len(dims) + 1)]
-        )
 
     def forward(self, x):
         embed0 = self.embed0(x[:, 0].int())
@@ -40,7 +36,6 @@ class FeedForwardRegressionNet(nn.Module):
 
         z = torch.cat((embed0, embed1, x_num), dim=1)
         for i, layer in enumerate(self.layers):
-            z = self.dropout[i](z)
             z = F.relu(layer(z))
-        z = self.output_layer(self.dropout[-1](z))
+        z = self.output_layer(z)
         return z.reshape(-1)

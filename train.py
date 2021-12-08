@@ -8,7 +8,7 @@ from model import FeedForwardRegressionNet
 from hyperparameters import sample_hyperparameters
 
 from torch.utils.data import TensorDataset
-from torch.optim import Adam
+from torch.optim import AdamW
 
 
 # Hyperparmaters.
@@ -22,8 +22,7 @@ LEARNING_RATE = hyperparameters["learning_rate"]
 EMBED_DIM0 = hyperparameters["embed_dim0"]
 EMBED_DIM1 = hyperparameters["embed_dim1"]
 EPOCHS = hyperparameters["epochs"]
-DROPOUT = hyperparameters["dropout"]
-# WEIGHT_DECAY = hyperparameters["weight_decay"]
+WEIGHT_DECAY = hyperparameters["weight_decay"]
 
 
 batch_size = 64
@@ -53,11 +52,10 @@ model = FeedForwardRegressionNet(
     EMBED_DIM1,
     HIDDEN_DIMS,
     output_dim,
-    DROPOUT,
 )
 
-# optimizer = SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
-optimizer = Adam(model.parameters(), lr=LEARNING_RATE)
+# optimizer = Adam(model.parameters(), lr=LEARNING_RATE)
+optimizer = AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
 
 criterion = nn.MSELoss()
 
