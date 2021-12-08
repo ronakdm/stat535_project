@@ -10,5 +10,5 @@
 #SBATCH --mail-user=ronakdm@uw.edu # Email to which notifications will be sent
  
 module load Python
-source ./quickstart/bin/activate
-python examples/pi_array.py $SLURM_ARRAY_TASK_ID
+source ../stat535/bin/activate
+python train.py $SLURM_ARRAY_TASK_ID
