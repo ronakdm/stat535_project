@@ -77,6 +77,7 @@ training_stats["learning_rate"] = LEARNING_RATE
 training_stats["embed_dim0"] = EMBED_DIM0
 training_stats["embed_dim1"] = EMBED_DIM1
 training_stats["epochs"] = EPOCHS
+training_stats["weight_decay"] = WEIGHT_DECAY
 
 training_stats["job_id"] = job_id
 pickle.dump(training_stats, open(f"results/training_stats_{job_id}", "wb"))
