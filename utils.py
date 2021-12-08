@@ -5,8 +5,6 @@ from torch.utils.data import random_split, DataLoader, RandomSampler
 import time
 import datetime
 
-from sklearn.metrics import r2_score
-
 
 def seed_everything(seed_val=42):
     random.seed(seed_val)
