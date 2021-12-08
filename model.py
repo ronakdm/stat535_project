@@ -23,14 +23,11 @@ class FeedForwardRegressionNet(nn.Module):
         self.vocab_size1 = vocab_size1
 
         # Fully-connected layers.
-        hidden_dims.insert(0, embed_dim0 + embed_dim1 + input_dim)
+        dims = [embed_dim0 + embed_dim1 + input_dim] + hidden_dims
         self.layers = nn.ModuleList(
-            [
-                nn.Linear(hidden_dims[i - 1], hidden_dims[i])
-                for i in range(1, len(hidden_dims))
-            ]
+            [nn.Linear(dims[i - 1], dims[i]) for i in range(1, len(dims))]
         )
-        self.layers.append(nn.Linear(hidden_dims[-1], output_dim))
+        self.output_layer = nn.Linear(hidden_dims[-1], output_dim)
 
     def forward(self, x):
         embed0 = self.embed0(x[:, 0].int())
@@ -40,4 +37,5 @@ class FeedForwardRegressionNet(nn.Module):
         z = torch.cat((embed0, embed1, x_num), dim=1)
         for layer in self.layers:
             z = F.relu(layer(z))
+        z = self.output_layer(z)
         return z.reshape(-1)

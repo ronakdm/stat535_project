@@ -1,7 +1,7 @@
 import torch.nn as nn
 import pickle
 import numpy as np
-import torch
+import sys
 
 from utils import seed_everything, set_device, get_train_val_dataloaders, train
 from model import FeedForwardRegressionNet
@@ -14,10 +14,8 @@ from torch.optim import Adam
 # Hyperparmaters.
 
 # When using with Slurm.
-# job_id = int(sys.argv[1])
-# hyperparameters = sample_hyperparameters()
-
-hyperparameters = pickle.load(open("best_hyperparameters.pkl", "rb"))
+job_id = int(sys.argv[1])
+hyperparameters = sample_hyperparameters()
 
 HIDDEN_DIMS = hyperparameters["hidden_dims"]
 LEARNING_RATE = hyperparameters["learning_rate"]
@@ -78,8 +76,6 @@ training_stats["embed_dim0"] = EMBED_DIM0
 training_stats["embed_dim1"] = EMBED_DIM1
 training_stats["epochs"] = EPOCHS
 
-torch.save(model.state_dict(), "best_model.pt")
-
-# training_stats["job_id"] = job_id
-# pickle.dump(training_stats, open(f"results/training_stats_{job_id}", "wb"))
+training_stats["job_id"] = job_id
+pickle.dump(training_stats, open(f"results/training_stats_{job_id}", "wb"))
 
