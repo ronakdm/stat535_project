@@ -81,8 +81,6 @@ def train(
     device="cuda",
     SSY=None,  # sum of squared error in y.
 ):
-    # We'll store a number of quantities such as training and validation loss and timings.
-    training_stats = []
 
     # Measure the total training time for the whole run.
     total_t0 = time.time()
@@ -175,26 +173,23 @@ def train(
             model, validation_dataloader, criterion
         )
 
+        R2 = 1 - total_squared_error / SSY
         if SSY is not None:
-            print("  Validation R^2: {:}".format(1 - total_squared_error / SSY))
+            print("  Validation R^2: {:}".format(R2))
 
-        # Record all statistics from this epoch.
-        training_stats.append(
-            {
-                "epoch": epoch_i + 1,
-                "Training Loss": avg_train_loss,
-                "Valid. Loss": avg_val_loss,
-                "Training Time": training_time,
-                "Validation Time": validation_time,
-            }
-        )
+    # Record all statistics from this epoch.
+    training_stats = {
+        "Training Loss": avg_train_loss,
+        "Valid. Loss": avg_val_loss,
+        "Training Time": training_time,
+        "Validation Time": validation_time,
+    }
 
     print("")
     print("Training complete!")
 
-    print(
-        "Total training took {:} (h:mm:ss)".format(format_time(time.time() - total_t0))
-    )
+    total_train_time = format_time(time.time() - total_t0)
+    print("Total training took {:} (h:mm:ss)".format(total_train_time))
 
     return training_stats
 
